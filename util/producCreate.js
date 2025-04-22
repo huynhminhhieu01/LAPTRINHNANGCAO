@@ -11,7 +11,7 @@ mongoose.connect(urlConnect, { useNewUrlParser: true }, err => {
     name: "Laptop Dell XPS 13",
     description: "Laptop Dell XPS 13 với thiết kế mỏng nhẹ, hiệu năng mạnh mẽ.",
     price: 24990000,
-    image: "https://example.com/image.jpg",
+    image: "../../public/images/maytinh/dell-xps-13.jpg",
     category: "Laptop"
     
   });

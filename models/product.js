@@ -29,7 +29,14 @@ const productSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
+    },
+    productNumber: {
+        type: Number, // Use a custom field for auto-increment
+        unique: true
     }
 });
-productSchema.plugin(AutoIncrement, { inc_field: '_id' });
+
+// Apply the auto-increment plugin to the custom field
+productSchema.plugin(AutoIncrement, { inc_field: 'productNumber' });
+
 module.exports = mongoose.model('Product', productSchema);

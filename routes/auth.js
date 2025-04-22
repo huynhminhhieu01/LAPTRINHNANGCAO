@@ -33,4 +33,3 @@ router.get("/change-password", authController.getChangePassword);
 router.post("/change-password", authController.postChangePassword);
 
 module.exports = router;
-p
