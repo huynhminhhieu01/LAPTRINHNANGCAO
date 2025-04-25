@@ -1,6 +1,8 @@
+// ======================
+// 1. Các thư viện cần thiết
+// ======================
 const path = require('path');
 require('dotenv').config();
-const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -9,82 +11,114 @@ const passport = require('passport');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const flash = require('connect-flash');
 const compression = require('compression');
-
-
-const app = express();
-
-// Kết nối MongoDB trước khi các phần khác
 const connectDB = require('./config/db');
-connectDB();
+const Cart = require('./util/cart'); // Đảm bảo Cart được import
 
-// Khởi tạo view engine, logger, và các middleware
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(compression());
+//import routes;
+
+
+
+// 2. Khởi tạo ứng dụng
+const app = express();
+// Cấu hình view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(logger('dev'));
 
+// 3. Kết nối Database
+connectDB();
+
+// 4. Middleware cơ bản
+app.use(compression());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Cấu hình session và passport sau khi kết nối DB
 app.use(cookieParser());
-app.use(flash());
-app.use( session({
-        secret: 'notsecret',
-        saveUninitialized: true,
-        resave: false,
-        store: new MongoDBStore({ uri: process.env.MONGO_URI, collection: 'sessions' }),
-        cookie: { maxAge: 180 * 60 * 1000 } // 3 giờ
-    })
-);
+app.use(logger('dev'));
 
-app.use((req, res, next) => {
-    var cart = new Cart(req.session.cart ? req.session.cart : {});
-    req.session.cart = cart;
-    res.locals.session = req.session;
-    next();
+// ======================
+// 5. Cấu hình Session
+// ======================
+const sessionStore = new MongoDBStore({
+  uri: process.env.MONGO_URI,
+  collection: 'sessions',
+  connectionOptions: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
 });
 
-// Khởi tạo Passport sau khi session
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'hieu123123',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  cookie: {
+    maxAge: 180 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  }
+}));
+
+// ======================
+// 6. Cấu hình Authentication
+// ======================
+app.use(flash());
+require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
+
+// ======================
+// 7. Biến toàn cục cho views
+// ======================
 app.use((req, res, next) => {
-    res.locals.user = req.user || null; // đảm bảo luôn có biến user
-    next();
-  });
-
-// Import models và các router
-const Cart = require('./util/cart'); 
-const Product = require('./models/product');
-const shopRouter = require('./routes/web');
-const authRouter = require('./routes/auth');
-
-
-// Sử dụng các router
-app.use('/', shopRouter);
-app.use('/auth', authRouter);
-
-// Cấu hình passport
-require('./config/passport')(passport);
-
-// Xử lý lỗi và trả về trang lỗi
-app.use(function (err, req, res, next) {
-    console.log('🔥 Error:', err); //
-    var cartProduct;
-    if (!req.session.cart) {
-        cartProduct = null;
-    } else {
-        var cart = new Cart(req.session.cart);
-        cartProduct = cart.generateArray();
-    }
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    res.status(err.status || 500);
-    res.render('error', { cartProduct: cartProduct });
+  res.locals.user = req.user || null;
+  res.locals.session = req.session;
+  req.session.cart = req.session.cart || new (require('./util/cart'))({});
+  // Đã loại bỏ csrfToken
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
 });
 
-// Khởi động server
-app.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on http://localhost:${process.env.PORT || 3000}`);
+// ======================
+// 8. Các routes chính
+// ======================
+const webRouter = require('./routes/web');
+const authRouter = require('./routes/auth');
+app.use('/', webRouter);
+app.use('/', authRouter);
+
+// ======================
+// 9. Xử lý lỗi
+// ======================
+app.use((req, res, next) => {
+  res.status(404).render('error', {
+    title: '404 Not Found',
+    message: 'Trang bạn tìm kiếm không tồn tại',
+    cartProduct: req.session.cart ? req.session.cart.generateArray() : []  // Sử dụng generateArray nếu giỏ hàng tồn tại
+  });
+});
+
+app.use((err, req, res, next) => {
+  console.error(' Error:', err.stack);
+
+
+  const cartProduct = req.session.cart ? new Cart(req.session.cart).generateArray() : null;
+
+  res.status(500).render('error', {
+    title: 'Lỗi Server',
+    message: 'Đã xảy ra lỗi hệ thống',
+    error: process.env.NODE_ENV === 'development' ? err : {},
+    cartProduct: cartProduct  // Hiển thị giỏ hàng trong trang lỗi nếu có
+  });
+});
+// ======================
+// 10. Khởi động server
+// ======================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server đang chạy trên port ${PORT}`);
+  console.log(`Mở trình duyệt và truy cập http://localhost:${PORT}`);
 });

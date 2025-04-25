@@ -1,7 +1,7 @@
 <!-- Bootstrap & Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <header class ="bg-success shadow-sm py-3">
   <div class="container d-flex justify-content-between align-items-center">
 
@@ -20,10 +20,10 @@
     <!-- Account, Cart, Location -->
     <div class="d-flex align-items-center gap-3">
       <% if (user) { %>
-        <span class="text-white"><i class="bi bi-person"></i> Xin chào, <%= user.name %></span>
-        <a class="btn btn-outline-dark btn-sm" href="/auth/logout">Đăng xuất</a>
+        <span class="text-white"><i class="bi bi-person"></i> Xin chào,<a href="/account"></a> <%= user.fullName%></span>
+        <a class="btn btn-outline-dark btn-sm" href="/logout">Đăng xuất</a>
       <% } else { %>
-        <a class="text-white text-decoration-none" href="/auth/login"><i class="bi bi-person"></i> Đăng nhập</a>
+        <a class="text-white text-decoration-none" href="/login"><i class="bi bi-person"></i> Đăng nhập</a>
       <% } %>
 
       <a class="text-white text-decoration-none position-relative" href="/cart">

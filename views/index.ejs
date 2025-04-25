@@ -1,19 +1,154 @@
 <!DOCTYPE html>
 <html lang="vi">
-    <%- include("partials/head") %>
+  <%- include("partials/head", { stylesheet: '/css/home.css', title: 'Trang chủ' }) %>
 
 <body>
-
   <!-- Include Header -->
-
+ 
 
   <!-- Main Content -->
- 
-  
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <h1 class="hero-title">Công Nghệ Mới Nhất 2025</h1>
+        <p class="hero-subtitle">Khám phá những sản phẩm công nghệ hàng đầu với mức giá tốt nhất</p>
+       
+      </div>
+    </section>
+
+    <% if (newProductBanner) { %>
+      <section class="py-5 bg-light">
+        <div class="container">
+          <h2 class="section-title">Sản phẩm mới</h2>
+          <div class="row">
+            <div class="col-md-12 mb-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <img src="<%= newProductBanner.image %>" class="card-img-top" alt="<%= newProductBanner.name %>">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <% } %>
+    
+
+    <!-- Banner Section -->
+    <% if (promoBanner) { %>
+      <section class="py-5 bg-light">
+        <div class="container">
+          <h2 class="section-title">Khuyến mãi</h2>
+          <div class="row">
+            <div class="col-md-12 mb-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <img src="<%= promoBanner.image %>" class="card-img-top" alt="<%= promoBanner.name %>">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <% } %>
+
+    <!-- Featured Products Section -->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <h2 class="section-title">Sản phẩm nổi bật</h2>
+        <div class="row">
+          <% featuredProducts.forEach(product => { %>
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <img src="<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+                <div class="card-body">
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <p class="text-danger fw-bold"><%= product.price.toLocaleString() %>₫</p>
+                  <% if (product.oldPrice) { %>
+                    <p class="text-muted small"><del><%= product.oldPrice.toLocaleString() %>₫</del> 
+                    <span class="badge bg-danger">-<%= Math.round((1 - product.price/product.oldPrice)*100) %>%</span></p>
+                  <% } %>
+                </div>
+                <div class="card-footer bg-white border-0">
+                  <button class="btn btn-sm btn-primary w-100">Thêm vào giỏ</button>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <div class="text-center mt-4">
+          <a href="/products" class="btn btn-outline-primary">Xem tất cả sản phẩm</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="py-5">
+      <div class="container">
+        <h2 class="section-title">Tin tức công nghệ</h2>
+        <div class="row g-4">
+          <% news.forEach(item => { %>
+            <div class="col-md-4">
+              <div class="news-card">
+                <img src="<%= item.image %>" class="news-img" alt="<%= item.title %>">
+                <div class="p-3">
+                  <h4><%= item.title %></h4>
+                  <p class="text-muted"><%= item.summary %></p>
+                  <a href="/news/<%= item.slug %>" class="text-primary text-decoration-none">Đọc tiếp</a>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </section>
+    <section class="py-5 bg-light">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="feature-box">
+              <div class="feature-icon">
+                <i class="fas fa-shipping-fast"></i>
+              </div>
+              <h3>Giao hàng nhanh</h3>
+              <p>Giao hàng toàn quốc trong 24h với đơn nội thành</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature-box">
+              <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3>Bảo hành chính hãng</h3>
+              <p>Bảo hành 12-24 tháng tại các trung tâm ủy quyền</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature-box">
+              <div class="feature-icon">
+                <i class="fas fa-headset"></i>
+              </div>
+              <h3>Hỗ trợ 24/7</h3>
+              <p>Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brands Section -->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <h2 class="section-title">Thương hiệu nổi bật</h2>
+        <div class="row g-4 align-items-center">
+          <% brands.forEach(brand => { %>
+            <div class="col-6 col-md-2 text-center">
+              <img src="<%= brand.logo %>" class="img-fluid" alt="<%= brand.name %>">
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <!-- Include Footer -->
   <%- include('partials/footer') %>
-
 </body>
-
 </html>

@@ -5,18 +5,34 @@ const Product = require('../models/product');
 // Trang chủ
 const getIndexProducts = async (req, res) => {
     try {
-        // Lấy tất cả sản phẩm từ MongoDB
-        const products = await Product.find();
-
-        // Truyền vào view
-        res.render('index', { 
-            title: 'Danh sách sản phẩm', 
-            products: products // Truyền danh sách sản phẩm vào view
-        });
-    } catch (error) {
-        res.status(500).send('Lỗi server: ' + error.message);
+      const featuredProducts = await Product.find({ isFeatured: true });
+  
+      const news = [
+        { title: "Chip AI mới ra mắt", image: "/images/news1.jpg" },
+        { title: "Điện thoại gập 2025", image: "/images/news2.jpg" },
+        { title: "Laptop siêu mỏng", image: "/images/news3.jpg" },
+      ];
+  
+      const brands = [
+        { name: "Apple", logo: "/images/brands/apple.png" },
+        { name: "Samsung", logo: "/images/brands/samsung.png" },
+        { name: "Asus", logo: "/images/brands/asus.png" },
+        { name: "Dell", logo: "/images/brands/dell.png" },
+        { name: "HP", logo: "/images/brands/hp.png" },
+        { name: "Lenovo", logo: "/images/brands/lenovo.png" },
+      ];
+  
+      res.render('index', {
+        title: 'Trang chủ',
+        featuredProducts,
+        news,
+        brands
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).render('error', { message: 'Internal Server Error' });
     }
-};
+  };
 
 // Chi tiết sản phẩm
 const getProduct = async (req, res) => {

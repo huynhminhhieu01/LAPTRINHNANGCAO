@@ -39,12 +39,23 @@ exports.getAccountChange = (req, res, next) => {
   });
 };
 
-exports.postAccountChange = (req, res, next) => {
-  req.user.firstName = req.body.firstName;
-  req.user.lastName = req.body.lastName;
-  req.user.email = req.body.email;
-  req.user.address = req.body.address;
-  req.user.phoneNumber = req.body.phoneNumber;
-  req.user.save();
-  res.redirect("/account");
+exports.postAccountChange = async (req, res, next) => {
+  try {
+    // Cập nhật thông tin người dùng
+    req.user.fullName = req.body.fullName;
+    req.user.email = req.body.email;
+    req.user.address = req.body.address;
+    req.user.phoneNumber = req.body.phoneNumber;
+
+    // Lưu thay đổi
+    await req.user.save();
+
+    // Thông báo thành công
+    req.flash('success', 'Thông tin tài khoản đã được cập nhật thành công.');
+
+    res.redirect("/account");
+  } catch (err) {
+    req.flash('error', 'Có lỗi xảy ra, vui lòng thử lại.');
+    res.redirect("/account-change-info");
+  }
 };

@@ -1,0 +1,12 @@
+<div class="container mt-5">
+    <h1 class="mb-4">Tài khoản cá nhân</h1>
+    
+    <ul class="list-group">
+      <li class="list-group-item"><strong>Họ tên:</strong> <%= user.fullName %></li>
+      <li class="list-group-item"><strong>Tên đăng nhập:</strong> <%= user.username %></li>
+      <li class="list-group-item"><strong>Email:</strong> <%= user.email %></li>
+      <li class="list-group-item"><strong>Quyền:</strong> <%= user.role %></li>
+      <li class="list-group-item"><strong>Xác minh email:</strong> <%= user.isVerified ? 'Đã xác minh' : 'Chưa xác minh' %></li>
+    </ul>
+  </div>
+  

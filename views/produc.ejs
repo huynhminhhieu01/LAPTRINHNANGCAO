@@ -1,0 +1,57 @@
+<!-- Giảm giá -->
+<div class="category-section">
+    <h3>Giảm giá</h3>
+    <div class="row">
+      <% discountedProducts.forEach(product => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <img src="<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="card-text">Giá: <%= product.discountedPrice || product.price %> VND</p>
+              <a href="/product/<%= product._id %>" class="btn btn-primary">Xem chi tiết</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+  
+  <!-- Best Seller -->
+  <div class="category-section mt-5">
+    <h3>Best Seller</h3>
+    <div class="row">
+      <% bestSellerProducts.forEach(product => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <img src="<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="card-text">Giá: <%= product.price %> VND</p>
+              <a href="/product/<%= product._id %>" class="btn btn-primary">Xem chi tiết</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+  
+  <!-- Hàng mới nhập -->
+  <div class="category-section mt-5">
+    <h3>Hàng mới nhập</h3>
+    <div class="row">
+      <% newArrivalProducts.forEach(product => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <img src="<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="card-text">Giá: <%= product.price %> VND</p>
+              <a href="/product/<%= product._id %>" class="btn btn-primary">Xem chi tiết</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+  

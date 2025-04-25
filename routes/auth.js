@@ -1,35 +1,26 @@
-var express = require("express");
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 var passport = require("passport");
-const authController = require("../controllers/auth");
-const userController = require("../controllers/user");
+const authController = require('../controllers/authController');
+const User = require('../controllers/user');
 
-router.get("/login", authController.getLogin);
+// Trang đăng nhập
+router.get('/login', authController.renderLoginPage);
+router.post('/login', authController.handleLogin);
 
-router.post("/login", authController.postLogin);
+// Đăng xuất
+router.get('/logout', authController.handleLogout);
 
-router.get("/logout", authController.getLogout);
+// Trang đăng ký
+router.get('/register', authController.renderSignUpPage);
+router.post('/register', authController.handleSignUp);
 
-router.get("/create-account", authController.getSignUp);
+// Xác thực email
+router.get('/verify-email', authController.renderVerifyEmailPage);
+router.post('/verify-email', authController.handleVerifyEmail);
 
-router.post("/create-account", authController.postSignUp);
+//xem thong tin tài khoản
 
-router.get("/account", userController.getAccount);
 
-router.get("/account-change-info", userController.getAccountChange);
-
-router.post("/account-change-info", userController.postAccountChange);
-
-router.get("/verify-email", authController.getVerifyEmail);
-
-router.post("/verify-email", authController.postVerifyEmail);
-
-router.get("/forgot-password", authController.getForgotPass);
-
-router.post("/forgot-password", authController.postForgotPass);
-
-router.get("/change-password", authController.getChangePassword);
-
-router.post("/change-password", authController.postChangePassword);
 
 module.exports = router;

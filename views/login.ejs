@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <%- include('partials/head') %>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #f8f9fc;
+      --danger-color: #e74a3b;
+      --success-color: #1cc88a;
+    }
+    
+    body {
+      background-color: var(--secondary-color);
+      font-family: 'Nunito', sans-serif;
+    }
+    
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    
+    .login-card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      overflow: hidden;
+    }
+    
+    .login-header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .login-body {
+      padding: 2rem;
+      background-color: white;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    .input-group-text {
+      background-color: #f8f9fc;
+    }
+    
+    .password-toggle {
+      cursor: pointer;
+      color: var(--primary-color);
+    }
+    
+    .invalid-feedback {
+      color: var(--danger-color);
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: #858796;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #e3e6f0;
+    }
+    
+    .divider::before {
+      margin-right: 1rem;
+    }
+    
+    .divider::after {
+      margin-left: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-12 col-md-9">
+          <div class="login-card">
+            <div class="login-header">
+              <h1 class="h4 mb-0">HỆ THỐNG QUẢN LÝ</h1>
+            </div>
+            
+            <div class="login-body">
+              <div class="row">
+                <!-- Left Column - Welcome -->
+                <div class="col-lg-6 d-none d-lg-block">
+                  <div class="text-center">
+                    <h4>Chào mừng trở lại!</h4>
+                    <p class="mb-4">Đăng nhập để tiếp tục sử dụng hệ thống</p>
+                    
+                    <div class="alert alert-info">
+                      <h5>Lợi ích khi đăng nhập:</h5>
+                      <ul class="text-start">
+                        <li>Truy cập đầy đủ tính năng</li>
+                        <li>Quản lý thông tin cá nhân</li>
+                        <li>Bảo mật dữ liệu tốt hơn</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Right Column - Login Form -->
+                <div class="col-lg-6">
+                  <h2 class="h5 mb-4">ĐĂNG NHẬP TÀI KHOẢN</h2>
+                  
+                  <% if (message) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                      <i class="fas fa-exclamation-circle me-2"></i> <%= message %>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  <% } %>
+                  
+                  <form id="loginForm" method="POST" action="/login" novalidate>
+                    
+                    <!-- Username Field -->
+                    <div class="mb-3">
+                      <label for="username" class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          id="username" 
+                          name="username" 
+                          placeholder="Nhập tên đăng nhập"
+                          required
+                          minlength="3"
+                          maxlength="30"
+                          pattern="[a-zA-Z0-9]+"
+                        >
+                      </div>
+                      <div class="invalid-feedback">Vui lòng nhập tên đăng nhập hợp lệ (3-30 ký tự, chỉ chữ và số)</div>
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between">
+                        <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                        <a href="/forgot-password" class="small text-decoration-none">Quên mật khẩu?</a>
+                      </div>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input 
+                          type="password" 
+                          class="form-control" 
+                          id="password" 
+                          name="password" 
+                          placeholder="Nhập mật khẩu"
+                          required
+                          minlength="6"
+                        >
+                        <button class="btn btn-outline-secondary password-toggle" type="button" id="togglePassword">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                      <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự</div>
+                    </div>
+                    
+                    <!-- Remember Me -->
+                    <div class="mb-3 form-check">
+                      <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                      <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                      <i class="fas fa-sign-in-alt me-2"></i> ĐĂNG NHẬP
+                    </button>
+                    
+                    <div class="divider">HOẶC</div>
+                    
+                    <!-- Social Login -->
+                    <div class="text-center mb-3">
+                      <p class="small">Đăng nhập bằng</p>
+                      <button type="button" class="btn btn-outline-primary me-2">
+                        <i class="fab fa-google"></i>
+                      </button>
+                      <button type="button" class="btn btn-outline-primary me-2">
+                        <i class="fab fa-facebook-f"></i>
+                      </button>
+                      <button type="button" class="btn btn-outline-primary">
+                        <i class="fab fa-github"></i>
+                      </button>
+                    </div>
+                    
+                    <!-- Register Link -->
+                    <div class="text-center">
+                      <p class="mb-0">Chưa có tài khoản? <a href="/register" class="text-decoration-none">Đăng ký ngay</a></p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom Scripts -->
+  <script>
+    // Toggle Password Visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const password = document.getElementById('password');
+      const icon = this.querySelector('i');
+      
+      if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        password.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+    
+    // Form Validation
+    (function() {
+      'use strict';
+      
+      const form = document.getElementById('loginForm');
+      
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
+</body>
+</html>

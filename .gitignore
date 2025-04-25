@@ -1,9 +1,7 @@
-# Bỏ qua các file tạm
-*.log
-*.tmp
-
 # Bỏ qua thư mục node_modules
 node_modules/
 
-# Bỏ qua các file build
+# Bỏ qua các file build hoặc tạm thời
 build/
+*.log
+*.tmp
