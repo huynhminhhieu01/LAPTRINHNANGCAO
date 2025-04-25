@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
+const PromoBanner = require('../models/PromoBanner');
 
 // Trang chủ
 const getIndexProducts = async (req, res) => {
     try {
       const featuredProducts = await Product.find({ isFeatured: true });
-  
+    
       const news = [
         { title: "Chip AI mới ra mắt", image: "/images/news1.jpg" },
         { title: "Điện thoại gập 2025", image: "/images/news2.jpg" },
@@ -22,11 +23,16 @@ const getIndexProducts = async (req, res) => {
         { name: "Lenovo", logo: "/images/brands/lenovo.png" },
       ];
   
+      const newProductBanner = await Product.findOne({ isNew: true });  
+      const promoBanner = await PromoBanner.findOne({ active: true });
       res.render('index', {
         title: 'Trang chủ',
         featuredProducts,
         news,
-        brands
+        brands,
+        newProductBanner,
+        promoBanner
+
       });
     } catch (err) {
       console.error(err);
