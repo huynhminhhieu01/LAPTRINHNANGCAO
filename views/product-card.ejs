@@ -1,0 +1,35 @@
+<div class="card product-card h-100">
+    <% if(product.discount) { %>
+        <span class="badge bg-danger position-absolute top-0 end-0 m-2">-<%= product.discount %>%</span>
+    <% } %>
+    
+    <a href="/product/<%= product.slug %>">
+        <img src="<%= product.mainImage %>" class="card-img-top" alt="<%= product.name %>">
+    </a>
+    
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="/product/<%= product.slug %>" class="text-decoration-none"><%= product.name %></a>
+        </h5>
+        
+        <div class="product-price mb-2">
+            <% if(product.discount) { %>
+                <span class="text-danger fw-bold"><%= product.discountedPrice.toLocaleString() %>đ</span>
+                <span class="text-decoration-line-through text-muted ms-2"><%= product.price.toLocaleString() %>đ</span>
+            <% } else { %>
+                <span class="fw-bold"><%= product.price.toLocaleString() %>đ</span>
+            <% } %>
+        </div>
+        
+        <div class="product-rating small mb-3">
+            <% for(let i = 0; i < product.rating; i++) { %>
+                <span class="text-warning">★</span>
+            <% } %>
+            <span class="text-muted">(<%= product.reviewCount %>)</span>
+        </div>
+    </div>
+    
+    <div class="card-footer bg-transparent">
+        <button class="btn btn-sm btn-outline-primary w-100">Thêm vào giỏ hàng</button>
+    </div>
+</div>

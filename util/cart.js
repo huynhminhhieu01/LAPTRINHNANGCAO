@@ -5,10 +5,6 @@ module.exports = function Cart(oldCart = {}) {
     this.totalPrice = oldCart.totalPrice || 0;
   
     // Thêm phương thức
-    this.generateArray = function() {
-      return Object.values(this.items);
-    };
-
     this.add = function(item, id, qty) {
         const itemQty = qty ? Number(qty) : 1;
         let storeItem = this.items[id];
@@ -56,6 +52,7 @@ module.exports = function Cart(oldCart = {}) {
         delete this.items[id];
     };
 
+    // Chỉ giữ lại một lần định nghĩa phương thức generateArray
     this.generateArray = function() {
         return Object.values(this.items); // Sử dụng Object.values thay vì for...in
     };

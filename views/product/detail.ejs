@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<%- include('partials/head', { title: product.name }) %>
+
+<body>
+  <main class="container py-5">
+    <h1 class="text-center mb-4"><%= product.name %></h1>
+
+    <div class="row">
+      <div class="col-md-6">
+        <img src="<%= product.image %>" alt="<%= product.name %>" class="img-fluid">
+      </div>
+      <div class="col-md-6">
+        <h3 class="text-success"><%= product.price %> VND</h3>
+        <p><strong>Mô tả:</strong> <%= product.description %></p>
+        
+        <form action="/add-to-cart/<%= product._id %>" method="POST">
+          <div class="mb-3">
+            <label for="quantity" class="form-label">Số lượng</label>
+            <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
+          </div>
+          <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <a href="/products" class="btn btn-secondary">Quay lại danh sách sản phẩm</a>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+
+</html>

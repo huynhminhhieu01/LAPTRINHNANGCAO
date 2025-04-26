@@ -12,10 +12,17 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true
+        required: true,
+        min: [0, 'Giá không thể nhỏ hơn 0']
     },
     discountedPrice: {  // Giá sản phẩm khi có giảm giá
-        type: Number
+        type: Number,
+        validate: {
+            validator: function(value) {
+                return value <= this.price;  // Giá giảm không thể cao hơn giá gốc
+            },
+            message: 'Giá giảm không thể cao hơn giá gốc'
+        }
     },
     image: {
         type: String,
@@ -56,7 +63,10 @@ productSchema.plugin(AutoIncrement, { inc_field: 'productNumber' });
 
 // Cập nhật trường updatedAt mỗi khi sản phẩm được cập nhật
 productSchema.pre('save', function(next) {
-    this.updatedAt = Date.now();
+    // Chỉ cập nhật updatedAt khi có thay đổi dữ liệu
+    if (this.isModified()) {
+        this.updatedAt = Date.now();
+    }
     next();
 });
 
