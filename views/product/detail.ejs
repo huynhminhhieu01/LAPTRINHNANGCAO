@@ -1,36 +1,127 @@
+<!-- views/products/detail.ejs -->
 <!DOCTYPE html>
 <html lang="vi">
-
-<%- include('partials/head', { title: product.name }) %>
-
+<head>
+  <%- include('../partials/head', { title: title }) %>
+</head>
 <body>
-  <main class="container py-5">
-    <h1 class="text-center mb-4"><%= product.name %></h1>
+  <main class="container mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a href="/products">Sản phẩm</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+      </ol>
+    </nav>
 
+    <!-- Product Detail Section -->
     <div class="row">
       <div class="col-md-6">
-        <img src="<%= product.image %>" alt="<%= product.name %>" class="img-fluid">
+        <img src="<%= product.image %>" class="img-fluid" alt="<%= product.name %>">
       </div>
       <div class="col-md-6">
-        <h3 class="text-success"><%= product.price %> VND</h3>
-        <p><strong>Mô tả:</strong> <%= product.description %></p>
+        <h1><%= product.name %></h1>
         
-        <form action="/add-to-cart/<%= product._id %>" method="POST">
-          <div class="mb-3">
-            <label for="quantity" class="form-label">Số lượng</label>
-            <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
+        <% if (product.discounted) { %>
+          <div class="price-section">
+            <span class="original-price"><%= product.price.toLocaleString() %>đ</span>
+            <span class="discounted-price"><%= product.discountedPrice.toLocaleString() %>đ</span>
+            <span class="badge bg-danger">-<%= Math.round((1 - product.discountedPrice/product.price)*100) %>%</span>
           </div>
-          <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
-        </form>
+        <% } else { %>
+          <div class="price"><%= product.price.toLocaleString() %>đ</div>
+        <% } %>
+
+        <div class="product-meta my-3">
+          <span class="badge bg-info"><%= product.category %></span>
+          <% if (product.bestSeller) { %>
+            <span class="badge bg-warning">Bán chạy</span>
+          <% } %>
+          <% if (product.newArrival) { %>
+            <span class="badge bg-success">Mới</span>
+          <% } %>
+        </div>
+
+        <div class="product-description">
+          <h4>Mô tả sản phẩm</h4>
+          <p><%= product.description %></p>
+        </div>
+<div class="mb-3">
+  <label for="quantity" class="form-label">Số lượng:</label>
+  <input type="number" id="quantity" class="form-control" value="1" min="1" style="width: 80px">
+</div>
+
+<button class="btn btn-primary add-to-cart" data-id="<%= product._id %>">
+  Thêm vào giỏ hàng
+</button>
       </div>
     </div>
 
-    <div class="mt-5">
-      <a href="/products" class="btn btn-secondary">Quay lại danh sách sản phẩm</a>
-    </div>
+    <!-- Related Products -->
+    <% if (relatedProducts.length > 0) { %>
+      <section class="mt-5">
+        <h3>Sản phẩm liên quan</h3>
+        <div class="row">
+          <% relatedProducts.forEach(p => { %>
+            <div class="col-md-3">
+              <div class="card">
+                <img src="<%= p.image %>" class="card-img-top" alt="<%= p.name %>">
+                <div class="card-body">
+                  <h5 class="card-title"><%= p.name %></h5>
+                  <p class="card-text"><%= p.price.toLocaleString() %>đ</p>
+                  <a href="/products/<%= p._id %>" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
   </main>
 
-  <%- include('partials/footer') %>
-</body>
+  <%- include('../partials/footer') %>
 
+  <<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const addToCartBtn = document.querySelector('.add-to-cart');
+      
+      addToCartBtn.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        const quantity = document.getElementById('quantity').value;
+        
+        <% if (user) { %>
+          // Nếu đã đăng nhập
+          fetch('/add-to-cart', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              productId: productId,
+              quantity: quantity
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('Đã thêm vào giỏ hàng!');
+              // Cập nhật UI giỏ hàng nếu cần
+            } else {
+              alert(data.message || 'Có lỗi xảy ra');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Lỗi khi thêm vào giỏ hàng');
+          });
+        <% } else { %>
+          // Nếu chưa đăng nhập
+          alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+          window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+        <% } %>
+      });
+    });
+    </script>
+</body>
 </html>

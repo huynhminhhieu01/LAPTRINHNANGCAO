@@ -1,0 +1,49 @@
+<!-- views/shopping_cart.ejs -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <main class="container mt-4">
+    <h2>Giỏ hàng</h2>
+
+    <% if (items.length === 0) { %>
+      <p class="text-center">Giỏ hàng trống.</p>
+      <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
+    <% } else { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Thành tiền</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(item => { %>
+            <tr>
+              <td><%= item.product.name %></td>
+              <td><%= item.qty %></td>
+              <td><%= item.product.price.toLocaleString() %>₫</td>
+              <td><%= item.price.toLocaleString() %>₫</td>
+              <td>
+                <a href="/delete-item/<%= item.product._id %>" class="btn btn-sm btn-danger">Xóa</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="text-end">
+        <h4>Tổng cộng: <%= totalPrice.toLocaleString() %>₫</h4>
+        <a href="/checkout" class="btn btn-success">Tiến hành đặt hàng</a>
+      </div>
+    <% } %>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

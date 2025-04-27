@@ -19,13 +19,22 @@ const renderLoginPage = (req, res) => {
 
 // Xử lý đăng nhập
 const handleLogin = (req, res, next) => {
-  passport.authenticate('local-signin', {
-    successReturnToOrRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
+  passport.authenticate('local-signin', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      req.flash('error_msg', info.message || 'Đăng nhập thất bại');
+      return res.redirect('/login');
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/');
+    });
   })(req, res, next);
 };
-
 // Đăng xuất
 const handleLogout = (req, res, next) => {
   req.session.cart = null;

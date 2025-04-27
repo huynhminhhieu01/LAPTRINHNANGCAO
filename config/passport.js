@@ -1,10 +1,12 @@
 const User = require('../models/user');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-const { validationResult } = require('express-validator'); 
+const { validationResult } = require('express-validator');
 
 module.exports = function(passport) {
-  // Serialize/Deserialize
+  // ======================
+  // 1. Serialize/Deserialize
+  // ======================
   passport.serializeUser((user, done) => {
     done(null, user._id);
   });
@@ -18,17 +20,19 @@ module.exports = function(passport) {
     }
   });
 
-  // Local Sign-In Strategy (Đăng nhập)
+  // ======================
+  // 2. Đăng nhập (Sign-In)
+  // ======================
   passport.use('local-signin', new LocalStrategy(
     {
       usernameField: 'username',
       passwordField: 'password',
-      passReqToCallback: true // Để truy cập flash messages
+      passReqToCallback: true
     },
     async (req, username, password, done) => {
       try {
-        // 1. Tìm user
-        const user = await User.findOne({ username }).select('+password')
+        // 1. Tìm user (bao gồm cả password đã hash)
+        const user = await User.findOne({ username }).select('+password');
         
         if (!user) {
           return done(null, false, { 
@@ -60,7 +64,9 @@ module.exports = function(passport) {
     }
   ));
 
-  // Local Sign-Up Strategy (Đăng ký)
+  // ======================
+  // 3. Đăng ký (Sign-Up)
+  // ======================
   passport.use('local-signup', new LocalStrategy(
     {
       usernameField: 'username',
@@ -69,7 +75,7 @@ module.exports = function(passport) {
     },
     async (req, username, password, done) => {
       try {
-        // 1. Validation cơ bản
+        // 1. Validation input
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           const messages = errors.array().map(e => e.msg);
@@ -77,29 +83,34 @@ module.exports = function(passport) {
         }
 
         // 2. Kiểm tra username tồn tại
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
+        if (await User.findOne({ username })) {
           return done(null, false, { 
             message: 'Tên đăng nhập đã tồn tại!' 
           });
         }
 
-        // 3. Kiểm tra email hợp lệ và tồn tại
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(req.body.email)) {
+        // 3. Validate email
+        const email = req.body.email?.trim();
+        if (!email) {
           return done(null, false, { 
-            message: 'Địa chỉ email không hợp lệ!' 
+            message: 'Vui lòng nhập email!' 
           });
         }
 
-        const existingEmail = await User.findOne({ email: req.body.email });
-        if (existingEmail) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return done(null, false, { 
+            message: 'Email không hợp lệ!' 
+          });
+        }
+
+        if (await User.findOne({ email })) {
           return done(null, false, { 
             message: 'Email đã được sử dụng!' 
           });
         }
 
-        // 4. Kiểm tra mật khẩu
+        // 4. Validate password
         if (password.length < 6) {
           return done(null, false, { 
             message: 'Mật khẩu phải có ít nhất 6 ký tự!' 
@@ -112,15 +123,15 @@ module.exports = function(passport) {
           });
         }
 
-        // 5. Hash mật khẩu và tạo user
+        // 5. Tạo user mới
         const hashedPassword = await bcrypt.hash(password, 12);
         
         const newUser = new User({
           username,
           password: hashedPassword,
-          email: req.body.email,
-          fullName: req.body.fullName,
-          isAuthenticated: false // Chưa xác thực email`
+          email,
+          fullName: req.body.fullName?.trim(),
+          isAuthenticated: false
         });
 
         await newUser.save();

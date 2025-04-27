@@ -1,12 +1,11 @@
+// util/cart.js
 module.exports = function Cart(oldCart = {}) {
-    // Khởi tạo dữ liệu
     this.items = oldCart.items || {};
     this.totalQty = oldCart.totalQty || 0;
     this.totalPrice = oldCart.totalPrice || 0;
   
-    // Thêm phương thức
     this.add = function(item, id, qty) {
-        const itemQty = qty ? Number(qty) : 1;
+        const itemQty = qty || 1;
         let storeItem = this.items[id];
         
         if (!storeItem) {
@@ -16,17 +15,16 @@ module.exports = function Cart(oldCart = {}) {
                 price: 0, 
                 images: item.images?.[0] || '' 
             };
-            this.numItems++;
         }
         
         storeItem.qty += itemQty;
         storeItem.price = storeItem.item.price * storeItem.qty;
         this.totalQty += itemQty;
-        this.totalPrice += storeItem.item.price * itemQty; // Fix: Tính lại tổng tiền
+        this.totalPrice += storeItem.item.price * itemQty; 
     };
 
     this.changeQty = function(item, id, qty) {
-        const newQty = qty ? Number(qty) : 1;
+        const newQty = qty || 1;
         let storeItem = this.items[id];
         
         if (!storeItem) {
@@ -39,7 +37,7 @@ module.exports = function Cart(oldCart = {}) {
         storeItem.price = storeItem.item.price * newQty;
         
         this.totalQty += newQty - oldQty;
-        this.totalPrice += storeItem.item.price * (newQty - oldQty); // Fix: Tính chênh lệch
+        this.totalPrice += storeItem.item.price * (newQty - oldQty);
     };
 
     this.deleteItem = function(id) {
@@ -48,12 +46,10 @@ module.exports = function Cart(oldCart = {}) {
 
         this.totalQty -= storeItem.qty;
         this.totalPrice -= storeItem.price;
-        this.numItems--;
         delete this.items[id];
     };
 
-    // Chỉ giữ lại một lần định nghĩa phương thức generateArray
     this.generateArray = function() {
-        return Object.values(this.items); // Sử dụng Object.values thay vì for...in
+        return Object.values(this.items);
     };
 };

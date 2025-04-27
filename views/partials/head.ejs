@@ -20,7 +20,7 @@
 
     <!-- Account, Cart, Location -->
     <div class="d-flex align-items-center gap-3">
-      <% if (user) { %>
+      <% if (user && user.fullName) { %>
         <span class="text-white">
           <i class="bi bi-person"></i> 
           Xin chào, <a href="/account" class="text-decoration-none"><%= user.fullName %></a>
