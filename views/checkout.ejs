@@ -1,0 +1,102 @@
+<%- include('partials/head', { title: 'Thanh toán' }) %>
+
+<body>
+  <div class="container mt-5">
+    <!-- Thông báo đặt hàng thành công (ẩn ban đầu) -->
+    <div id="orderSuccessAlert" class="alert alert-success d-none">
+      Đặt hàng thành công! Cảm ơn bạn đã mua sắm.
+    </div>
+
+    <!-- Giỏ hàng của bạn -->
+    <div class="order-summary">
+      <h4>Giỏ hàng của bạn</h4>
+      <% if (cart && cart.items) { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Số lượng</th>
+              <th>Giá</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Object.values(cart.items).forEach(item => { %>
+              <tr>
+                <td><%= item.product.name %></td>
+                <td><%= item.qty %></td>
+                <td><%= item.price.toLocaleString('vi-VN') %>đ</td>
+                <td><%= (item.price * item.qty).toLocaleString('vi-VN') %>đ</td>
+              </tr>
+            <% }); %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+              <td><%= cart.totalPrice.toLocaleString('vi-VN') %>đ</td>
+            </tr>
+          </tfoot>
+        </table>
+      <% } else { %>
+        <p class="text-muted">Giỏ hàng trống</p>
+      <% } %>
+    </div>
+
+    <!-- Thông tin giao hàng -->
+    <div class="shipping-info mt-5">
+      <h4>Thông tin giao hàng</h4>
+      <form id="checkoutForm" action="/checkout" method="POST">
+        <div class="mb-3">
+          <label for="fullName" class="form-label">Họ và tên</label>
+          <input type="text" class="form-control" id="fullName" name="fullName" required>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Số điện thoại</label>
+          <input type="text" class="form-control" id="phone" name="phone" required>
+        </div>
+        <div class="mb-3">
+          <label for="address" class="form-label">Địa chỉ</label>
+          <input type="text" class="form-control" id="address" name="address" required>
+        </div>
+        
+        <!-- Phương thức thanh toán -->
+        <div class="mb-3">
+          <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
+          <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+            <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+            <option value="banking">Thanh toán qua ngân hàng</option>
+            <option value="momo">Thanh toán qua Momo</option>
+            <option value="vnpay">Thanh toán qua VNPAY</option>
+          </select>
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-primary">Đặt hàng</button>
+          <a href="/cart" class="btn btn-outline-secondary">Quay lại giỏ hàng</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <% include('partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // Tạm ngăn form submit để demo
+      
+      // Hiển thị thông báo thành công
+      document.getElementById('orderSuccessAlert').classList.remove('d-none');
+      
+      // Cuộn lên đầu trang để hiển thị thông báo
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Nếu muốn submit form thật sau 3 giây
+      setTimeout(() => {
+        this.submit();
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

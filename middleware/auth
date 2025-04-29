@@ -1,0 +1,22 @@
+// Middleware cơ bản - yêu cầu đăng nhập
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  req.flash('error_msg', 'Vui lòng đăng nhập');
+  res.redirect('/login');
+};
+
+// Middleware chỉ cho admin
+const isAdmin = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.role === 'admin') {
+    return next();
+  }
+  req.flash('error_msg', 'Bạn không có quyền truy cập');
+  res.redirect('/'); // Chuyển hướng về trang chủ nếu không phải admin
+};
+
+module.exports = {
+  isAuthenticated,
+  isAdmin
+};

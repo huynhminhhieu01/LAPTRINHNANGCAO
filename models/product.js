@@ -2,14 +2,16 @@ const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const productSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
+  name: { 
+    type: String, 
+    required: true,
+    trim: true
+  },
+  slug: {
+    type: String,
+    unique: true,
+    index: true
+  },
     price: {
         type: Number,
         required: true,
@@ -28,10 +30,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    category: {
-        type: String,
-        required: true
-    },
+    category: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Category', // Tham chiếu đến model Category
+        required: true 
+      },
     discounted: {  // Trường để xác định sản phẩm giảm giá
         type: Boolean,
         default: false
@@ -63,11 +66,27 @@ productSchema.plugin(AutoIncrement, { inc_field: 'productNumber' });
 
 // Cập nhật trường updatedAt mỗi khi sản phẩm được cập nhật
 productSchema.pre('save', function(next) {
-    // Chỉ cập nhật updatedAt khi có thay đổi dữ liệu
-    if (this.isModified()) {
-        this.updatedAt = Date.now();
-    }
+  if (this.isModified('name') || !this.slug) {
+    const baseSlug = slugify(this.name, {
+      lower: true,
+      strict: true,
+      locale: 'vi',       // hỗ trợ tiếng Việt
+      remove: /[*+~.()'"!:@]/g
+    });
+    
+    // Xử lý trùng slug
+    this.constructor.find({ slug: new RegExp(`^${baseSlug}`, 'i') })
+      .then((products) => {
+        if (products.length > 0) {
+          this.slug = `${baseSlug}-${products.length + 1}`;
+        } else {
+          this.slug = baseSlug;
+        }
+        next();
+      })
+      .catch(next);
+  } else {
     next();
+  }
 });
-
 module.exports = mongoose.model('Product', productSchema);

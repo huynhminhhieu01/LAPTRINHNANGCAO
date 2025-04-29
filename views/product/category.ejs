@@ -1,0 +1,42 @@
+<%- include('../partials/head', { title: currentCategory.name }) %>
+
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+      <li class="breadcrumb-item active"><%= currentCategory.name %></li>
+    </ol>
+  </nav>
+
+  <h2 class="mb-4"><%= currentCategory.name %></h2>
+  
+  <% if (products && products.length > 0) { %>
+    <div class="row">
+      <% products.forEach(product => { %>
+        <div class="col-md-3 mb-4">
+          <div class="card h-100">
+            <img src="<%= product.image || '/images/default-product.jpg' %>" 
+                 class="card-img-top" 
+                 alt="<%= product.name %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="text-danger font-weight-bold">
+                <%= product.price.toLocaleString('vi-VN') %>đ
+              </p>
+              <a href="/products/detail/<%= product.slug || product._id %>" 
+                class="btn btn-primary btn-sm">
+               Xem chi tiết
+             </a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="alert alert-info">
+      Hiện chưa có sản phẩm nào trong danh mục này
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

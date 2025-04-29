@@ -14,12 +14,17 @@ module.exports = function(passport) {
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
+      if (!user) {
+        // Nếu không tìm thấy người dùng
+        return done(null, false, { message: 'Người dùng không tồn tại' });
+      }
+      // Nếu tìm thấy người dùng, trả về thông tin người dùng
       done(null, user);
     } catch (err) {
+      console.error('Lỗi khi deserialize user:', err); // Log lỗi chi tiết
       done(err);
     }
   });
-
   // ======================
   // 2. Đăng nhập (Sign-In)
   // ======================
